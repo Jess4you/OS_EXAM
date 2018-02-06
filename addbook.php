@@ -1,5 +1,5 @@
 <?php
-    
+  include 'include/dbconnection.php';  
 ?>
 <html>
 
@@ -19,6 +19,20 @@
 		<label>Published Year:</label> <input type="text" name="year" required/>
         <div><br/></div>
     <input style="float:right" type="submit" value="Add Book" onClick="return submit_form();" name="submit"/>
+    <?php
+        if(isset($_POST['title']) &&
+           isset($_POST['pages']) &&
+           isset($_POST['author']) &&
+           isset($_POST['year']))
+        {
+            $title = $_POST['title'];
+            $pages = $_POST['pages'];
+            $author = $_POST['author'];
+            $year = $_POST['year'];
+            $query = "INSERT INTO book(title,pages,author,year) VALUES('$title',$pages,'$author',$year)";
+            mysqli_query($dbconn,$query);
+        }
+    ?>
     </fieldset>
     <h3>List of Stored Books</h3>
     <table border="2" align="center" cellpadding=5>
@@ -32,7 +46,21 @@
             </thead>
             <tbody>
                 <?php
-                
+                $query = "SELECT * FROM book";
+                if ($result = mysqli_query($dbconn, $query)){
+                    while ($row = mysqli_fetch_assoc($result)){
+                        $title = $row['title'];
+                        $pages = $row['pages'];
+                        $author = $row['author'];
+                        $year = $row['year'];
+                        echo "
+                        <tr><td>$title</td>
+                            <td>$pages</td>
+                            <td>$author</td>
+                            <td>$year</td>
+                            <td><input type='button' value='Edit'/></td>";
+                    }
+                }
                 ?>
             </tbody>
         </table>
@@ -45,5 +73,6 @@
 	</script>
 <?php 
     $dbconn->close();
+    ?>
 </body>
 </html>
